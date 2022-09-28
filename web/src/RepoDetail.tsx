@@ -4,6 +4,10 @@ import ReactMarkdown from 'react-markdown';
 export function RepoDetail({ repo, handlevisible }: any) {
   const [latestCom, setLatestCom] = useState<any>(null);
   const [readme, setReadme] = useState('');
+  /**
+   * @param commits
+   * @description find the lasest commit data from the commits list
+   */
   const getLatestCommit = (commits: any[]) => {
     commits.sort((com1, com2) => {
       const date1 = new Date(com1.created_at);
@@ -18,6 +22,9 @@ export function RepoDetail({ repo, handlevisible }: any) {
     });
     setLatestCom(commits[0]);
   };
+  /**
+   * @description Fetch the readme data
+   */
   const getReadme = useCallback(async () => {
     fetch(
       `https://raw.githubusercontent.com/${repo.full_name}/master/README.md`,
@@ -32,8 +39,14 @@ export function RepoDetail({ repo, handlevisible }: any) {
       .then((response) => response.text())
       .then((data) => {
         setReadme(data);
+      })
+      .catch((err) => {
+        console.log(err.message);
       });
   }, [repo]);
+  /**
+   * @description Get the commits list with the github api
+   */
   const getCommits = useCallback(async () => {
     fetch(`https://api.github.com/repos/${repo.full_name}/commits`)
       .then((response) => response.json())

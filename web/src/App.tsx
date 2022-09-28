@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 import './App.css';
 import { RepoDetail } from './RepoDetail';
@@ -8,7 +8,12 @@ export function App() {
   const [visible, setVisible] = useState(false);
   const [curRepo, setCurRepo] = useState(null);
 
-  const orderByDate = (list: any[]) => {
+  /**
+   * @param list
+   * @returns list
+   * @description Sort the repository list by created date.
+   */
+  const orderByDate = (list: any[]): any[] => {
     list.sort((repo1, repo2) => {
       const date1 = new Date(repo1.created_at);
       const date2 = new Date(repo2.created_at);
@@ -22,19 +27,37 @@ export function App() {
     });
     return list;
   };
-  const filterReposByLang = (language: string) => {
+  /**
+   * @param language
+   * @returns null
+   * @description Filter the repository list by language value
+   */
+  const filterReposByLang = (language: string): void => {
     const reposTemp = [...repos];
     const result = reposTemp.filter((repo) => repo.language === language);
     setRepos(result);
   };
-  const showDetail = (repo: any) => {
+  /**
+   * @param repo
+   * @description When click one repository from the list, set the current repository value
+   */
+  const showDetail = (event: React.MouseEvent<HTMLElement>, repo: any) => {
+    if ((event.target as HTMLElement).tagName === 'BUTTON') {
+      return;
+    }
     setVisible(true);
     setCurRepo(repo);
   };
+  /**
+   * @description When click back button, set the visible state value to false
+   */
   const handleBack = () => {
     setVisible(false);
     setCurRepo(null);
   };
+  /**
+   * @description get repository list from the backend api
+   */
   const getRepos = useCallback(async () => {
     fetch('http://localhost:4000/repos/')
       .then((response) => response.json())
@@ -65,8 +88,8 @@ export function App() {
               return (
                 <tr
                   key={index}
-                  onClick={() => {
-                    showDetail(repo);
+                  onClick={(event) => {
+                    showDetail(event, repo);
                   }}
                 >
                   <td>{index + 1}</td>
